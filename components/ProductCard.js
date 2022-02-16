@@ -1,50 +1,48 @@
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useCart } from '@nacelle/react-hooks';
-import { getSelectedVariant } from 'utils/getSelectedVariant';
-import { getCartVariant } from 'utils/getCartVariant';
-import styles from './ProductCard.module.css';
+import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useCart } from '@nacelle/react-hooks'
+import { getSelectedVariant } from 'utils/getSelectedVariant'
+import { getCartVariant } from 'utils/getCartVariant'
+import styles from './ProductCard.module.css'
 
 function ProductCard({ product }) {
-  console.log('product that came to product card:')
-  console.log(product)
-  const [, { addToCart }] = useCart();
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [, { addToCart }] = useCart()
+  const [selectedVariant, setSelectedVariant] = useState(product.variants[0])
   // const [selectedOptions, setSelectedOptions] = useState(
   //   selectedVariant.content.selectedOptions
   // );
 
-  let options = null;
+  let options = null
   if (product?.content?.options?.some((option) => option.values.length > 1)) {
-    options = product?.content?.options;
+    options = product?.content?.options
   }
 
   const buttonText = selectedVariant
     ? selectedVariant.availableForSale
       ? 'Add To Cart'
       : 'Sold Out'
-    : 'Select Option';
+    : 'Select Option'
 
   const handleOptionChange = (event, option) => {
-    const newOption = { name: option.name, value: event.target.value };
+    const newOption = { name: option.name, value: event.target.value }
     const optionIndex = selectedOptions.findIndex((selectedOption) => {
-      return selectedOption.name === newOption.name;
-    });
+      return selectedOption.name === newOption.name
+    })
 
-    const newSelectedOptions = [...selectedOptions];
+    const newSelectedOptions = [...selectedOptions]
     if (optionIndex > -1) {
-      newSelectedOptions.splice(optionIndex, 1, newOption);
-      setSelectedOptions([...newSelectedOptions]);
+      newSelectedOptions.splice(optionIndex, 1, newOption)
+      setSelectedOptions([...newSelectedOptions])
     } else {
-      setSelectedOptions([...newSelectedOptions, newOption]);
+      setSelectedOptions([...newSelectedOptions, newOption])
     }
     const variant = getSelectedVariant({
       product,
-      options: newSelectedOptions
-    });
-    setSelectedVariant(variant ? { ...variant } : null);
-  };
+      options: newSelectedOptions,
+    })
+    setSelectedVariant(variant ? { ...variant } : null)
+  }
 
   // Get product data and add it to the cart by using `addToCart`
   // from the `useCart` hook provided by `@nacelle/react-hooks`.
@@ -52,13 +50,13 @@ function ProductCard({ product }) {
   const handleAddItem = () => {
     const variant = getCartVariant({
       product,
-      variant: selectedVariant
-    });
+      variant: selectedVariant,
+    })
     addToCart({
       variant,
-      quantity: 1
-    });
-  };
+      quantity: 1,
+    })
+  }
 
   return (
     product && (
@@ -70,8 +68,8 @@ function ProductCard({ product }) {
           <a>
             {product.content.featuredMedia ? (
               <Image
-                src={product.content.featuredMedia.src}
-                alt={product.content.featuredMedia.altText}
+                src="{product.content.featuredMedia.src}"
+                alt="{product.content.featuredMedia.altText}"
                 width={530}
                 height={350}
                 className={styles.image}
@@ -121,7 +119,7 @@ function ProductCard({ product }) {
         </div>
       </div>
     )
-  );
+  )
 }
 
-export default ProductCard;
+export default ProductCard

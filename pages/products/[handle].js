@@ -108,8 +108,8 @@ function Product({ product, flashSale, outletSaleText, additionalSaleText }) {
       <div className={styles.product}>
         <div className={styles.media}>
           <Image
-            src={product.content.featuredMedia.src}
-            alt={product.content.featuredMedia.altText}
+            src='{product.content.featuredMedia.src}'
+            alt="{product.content.featuredMedia.altText}"
             width={530}
             height={350}
             className={styles.image}
@@ -231,9 +231,9 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       product,
-      flashSale,
-      outletSaleText,
-      additionalSaleText
+      flashSale
+      // outletSaleText,
+      // additionalSaleText
     },
     revalidate: 60
   };

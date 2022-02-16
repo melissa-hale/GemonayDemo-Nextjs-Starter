@@ -1,33 +1,38 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { nacelleClient } from 'services';
-import ProductCard from 'components/ProductCard';
-import styles from 'styles/Collection.module.css';
-import Countdown, { zeroPad } from 'react-countdown';
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { nacelleClient } from 'services'
+import ProductCard from 'components/ProductCard'
+import styles from 'styles/Collection.module.css'
+import Countdown, { zeroPad } from 'react-countdown'
 
 function Collection(props) {
-  const router = useRouter();
-  const { collection, flashSale } = props;
-  const [products, setProducts] = useState(props.products);
-  const [canFetch, setCanFetch] = useState(props.canFetch);
-  const [isFetching, setIsFetching] = useState(false);
+  const router = useRouter()
+  const { collection, flashSale } = props
+  const [products, setProducts] = useState(props.products)
+  const [canFetch, setCanFetch] = useState(props.canFetch)
+  const [isFetching, setIsFetching] = useState(false)
 
   const activeProducts = canFetch
     ? products?.slice(0, products.length - 1)
-    : products;
+    : products
 
   let flashSaleText = false
-  const flashSaleRenderer = ({days, hours, minutes, seconds, completed }) => {
-    if(completed) {
+  const flashSaleRenderer = ({ days, hours, minutes, seconds, completed }) => {
+    if (completed) {
       return <></>
     } else {
-      const daysText = days > 1 ? <strong>{days} Days</strong> : <strong>Today</strong>;
-      return <p suppressHydrationWarning>Ends {daysText} {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}</p>
+      const daysText =
+        days > 1 ? <strong>{days} Days</strong> : <strong>Today</strong>
+      return (
+        <p suppressHydrationWarning>
+          Ends {daysText} {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
+        </p>
+      )
     }
   }
   if (flashSale?.fields?.endDate) {
-    const now = new Date();
-    const endDate = new Date(flashSale.fields.endDate);
+    const now = new Date()
+    const endDate = new Date(flashSale.fields.endDate)
     if (now < endDate) {
       flashSaleText = (
         <Countdown
@@ -43,25 +48,25 @@ function Collection(props) {
   // from a collection, using the last `nacelleEntryId` as a cursor.
   // (https://nacelle.com/docs/querying-data/storefront-sdk)
   const handleFetch = async () => {
-    setIsFetching(true);
-    const after = products[products?.length - 1].nacelleEntryId;
+    setIsFetching(true)
+    const after = products[products?.length - 1].nacelleEntryId
     const { productCollections } = await nacelleClient.query({
       query: PRODUCTS_QUERY,
-      variables: { handle: router.query.handle, after }
-    });
-    const newProducts = productCollections[0]?.products;
+      variables: { handle: router.query.handle, after },
+    })
+    const newProducts = productCollections[0]?.products
     if (newProducts) {
-      setCanFetch(newProducts.length === 12);
-      setProducts([...products, ...newProducts]);
+      setCanFetch(newProducts.length === 12)
+      setProducts([...products, ...newProducts])
     }
-    setIsFetching(false);
-  };
+    setIsFetching(false)
+  }
 
   return (
     collection && (
       <div className={styles.collection}>
         {collection.content?.title && <h1>{collection.content.title}</h1>}
-        {flashSaleText && (flashSaleText)}
+        {flashSaleText && flashSaleText}
         <div className={styles.list}>
           {activeProducts.map((product, index) => (
             <div className={styles.item} key={`${product.id}-${index}`}>
@@ -80,25 +85,37 @@ function Collection(props) {
         )}
       </div>
     )
-  );
+  )
 }
 
-export default Collection;
+export default Collection
 
 export async function getStaticPaths() {
   // Performs a GraphQL query to Nacelle to get product collection handles.
   // (https://nacelle.com/docs/querying-data/storefront-sdk)
   const results = await nacelleClient.query({
-    query: HANDLES_QUERY
-  });
+    query: HANDLES_QUERY,
+  })
+
   const handles = results.productCollections
-    .filter((collection) => collection.content?.handle)
-    .map((collection) => ({ params: { handle: collection.content.handle } }));
+    .filter((collection) => collection.content?.handle && collection.content.handle != 'Training' && collection.content.handle != 'Video Download')
+    .map((collection) => ({ params: { handle: collection.content.handle } }))
+
+  console.log('########################')
+  console.log('########################')
+  console.log('########################')
+  console.log('########################')
+  console.log('the handles are:')
+  console.log(handles)
+  console.log('########################')
+  console.log('########################')
+  console.log('########################')
+  console.log('########################')
 
   return {
     paths: handles,
-    fallback: 'blocking'
-  };
+    fallback: 'blocking',
+  }
 }
 
 export async function getStaticProps({ params }) {
@@ -107,34 +124,38 @@ export async function getStaticProps({ params }) {
   // (https://nacelle.com/docs/querying-data/storefront-sdk)
   const { productCollections, flashSales } = await nacelleClient.query({
     query: PAGE_QUERY,
-    variables: { handle: params.handle }
-  });
+    variables: { handle: params.handle },
+  })
 
   if (!productCollections.length) {
     return {
-      notFound: true
-    };
-  }
-  const flashSale = flashSales.find(flashSale => {
-    if (params.handle !== flashSale.fields.collectionHandle || !flashSale.fields.endDate) {
-      return false;
+      notFound: true,
     }
-    const now = new Date();
-    const endDate = new Date(flashSale.fields.endDate)
-    if (now > endDate) return false;
-    return true;
-  }) || false;
+  }
+  const flashSale =
+    flashSales.find((flashSale) => {
+      if (
+        params.handle !== flashSale.fields.collectionHandle ||
+        !flashSale.fields.endDate
+      ) {
+        return false
+      }
+      const now = new Date()
+      const endDate = new Date(flashSale.fields.endDate)
+      if (now > endDate) return false
+      return true
+    }) || false
 
-  const { products, ...rest } = productCollections[0];
+  const { products, ...rest } = productCollections[0]
   return {
     props: {
       collection: rest,
       products,
       canFetch: products?.length > 12,
-      flashSale
+      flashSale,
     },
-    revalidate: 60
-  };
+    revalidate: 60,
+  }
 }
 
 // GraphQL fragment of necessary product data.
@@ -175,7 +196,7 @@ const PRODUCT_FRAGMENT = `
       }
     }
   }
-`;
+`
 
 // GraphQL query for the handles of product collections.
 // Used in `getStaticPaths`.
@@ -188,7 +209,7 @@ const HANDLES_QUERY = `
       }
     }
   }
-`;
+`
 
 // GraphQL query for product collection content and initial products.
 // Used in `getStaticProps`.
@@ -210,7 +231,7 @@ const PAGE_QUERY = `
       fields
     }
   }
-`;
+`
 
 // GraphQL query for paginated products within a collection.
 // Used in `handleFetch`.
@@ -223,4 +244,4 @@ const PRODUCTS_QUERY = `
       }
     }
   }
-`;
+`
