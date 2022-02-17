@@ -90,47 +90,49 @@ function Collection(props) {
 
 export default Collection
 
-export async function getStaticPaths() {
-  // Performs a GraphQL query to Nacelle to get product collection handles.
-  // (https://nacelle.com/docs/querying-data/storefront-sdk)
-  const results = await nacelleClient.query({
-    query: HANDLES_QUERY,
-  })
+// export async function getStaticPaths() {
+//   // Performs a GraphQL query to Nacelle to get product collection handles.
+//   // (https://nacelle.com/docs/querying-data/storefront-sdk)
+//   const results = await nacelleClient.query({
+//     query: HANDLES_QUERY,
+//   })
 
-  const handles = results.productCollections
-    .filter(
-      (collection) =>
-        collection.content?.handle &&
-        collection.content.handle != 'Training' &&
-        collection.content.handle != 'Video-Download' &&
-        collection.content.handle != 'Bras-Tanks',
-    )
-    .map((collection) => ({ params: { handle: collection.content.handle } }))
+//   const handles = results.productCollections
+//     .filter(
+//       (collection) =>
+//         collection.content?.handle &&
+//         collection.content.handle != 'Training' &&
+//         collection.content.handle != 'Video-Download' &&
+//         collection.content.handle != 'Bras-Tanks',
+//     )
+//     .map((collection) => ({ params: { handle: collection.content.handle } }))
 
-  console.log('########################')
-  console.log('########################')
-  console.log('########################')
-  console.log('########################')
-  console.log('the handles are:')
-  console.log(handles)
-  console.log('########################')
-  console.log('########################')
-  console.log('########################')
-  console.log('########################')
+//   console.log('########################')
+//   console.log('########################')
+//   console.log('########################')
+//   console.log('########################')
+//   console.log('the handles are:')
+//   console.log(handles)
+//   console.log('########################')
+//   console.log('########################')
+//   console.log('########################')
+//   console.log('########################')
 
-  return {
-    paths: handles,
-    fallback: 'blocking',
-  }
-}
+//   return {
+//     paths: handles,
+//     fallback: 'blocking',
+//   }
+// }
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps(context) {
   // Performs a GraphQL query to Nacelle to get product collection data,
   // using the handle of the current page.
   // (https://nacelle.com/docs/querying-data/storefront-sdk)
+  const handle = context.params.handle
+
   const { productCollections, flashSales } = await nacelleClient.query({
     query: PAGE_QUERY,
-    variables: { handle: params.handle },
+    variables: { handle: handle },
   })
 
   if (!productCollections.length) {
@@ -141,7 +143,7 @@ export async function getStaticProps({ params }) {
   const flashSale =
     flashSales.find((flashSale) => {
       if (
-        params.handle !== flashSale.fields.collectionHandle ||
+        handle !== flashSale.fields.collectionHandle ||
         !flashSale.fields.endDate
       ) {
         return false
@@ -159,8 +161,7 @@ export async function getStaticProps({ params }) {
       products,
       canFetch: products?.length > 12,
       flashSale,
-    },
-    revalidate: 60,
+    }
   }
 }
 

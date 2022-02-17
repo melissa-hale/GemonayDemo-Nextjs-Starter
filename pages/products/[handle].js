@@ -174,26 +174,28 @@ function Product({ product, flashSale, outletSaleText, additionalSaleText }) {
 
 export default Product;
 
-export async function getStaticPaths() {
-  // Performs a GraphQL query to Nacelle to get product handles.
-  // (https://nacelle.com/docs/querying-data/storefront-sdk)
-  const results = await nacelleClient.query({
-    query: HANDLES_QUERY
-  });
-  const handles = results.products
-    .filter((product) => product.content?.handle)
-    .map((product) => ({ params: { handle: product.content.handle } }));
+// export async function getStaticPaths() {
+//   // Performs a GraphQL query to Nacelle to get product handles.
+//   // (https://nacelle.com/docs/querying-data/storefront-sdk)
+//   const results = await nacelleClient.query({
+//     query: HANDLES_QUERY
+//   });
+//   const handles = results.products
+//     .filter((product) => product.content?.handle)
+//     .map((product) => ({ params: { handle: product.content.handle } }));
 
-  return {
-    paths: handles,
-    fallback: 'blocking'
-  };
-}
+//   return {
+//     paths: handles,
+//     fallback: 'blocking'
+//   };
+// }
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps(context) {
   // Performs a GraphQL query to Nacelle to get product data,
   // using the handle of the current page.
   // (https://nacelle.com/docs/querying-data/storefront-sdk)
+  const handle = context.params.handle
+
   const {
     products,
     productCollections,
@@ -202,7 +204,7 @@ export async function getStaticProps({ params }) {
     additionalSaleMessaging
   } = await nacelleClient.query({
     query: PAGE_QUERY,
-    variables: { handle: params.handle }
+    variables: { handle: handle }
   });
 
   const product = products[0];
@@ -234,8 +236,7 @@ export async function getStaticProps({ params }) {
       flashSale
       // outletSaleText,
       // additionalSaleText
-    },
-    revalidate: 60
+    }
   };
 }
 
