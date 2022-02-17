@@ -8,7 +8,7 @@ import styles from './ProductCard.module.css'
 
 function ProductCard({ product }) {
   const [, { addToCart }] = useCart()
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0])
+  const [selectedVariant, setSelectedVariant] = useState(product.variants[1])
   // const [selectedOptions, setSelectedOptions] = useState(
   //   selectedVariant.content.selectedOptions
   // );

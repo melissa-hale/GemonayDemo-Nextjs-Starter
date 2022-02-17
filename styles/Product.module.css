@@ -23,6 +23,7 @@
 }
 .image {
   width: 100%;
+  object-fit: contain;
 }
 .main {
   display: flex;

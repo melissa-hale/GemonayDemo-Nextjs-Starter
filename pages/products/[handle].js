@@ -9,7 +9,7 @@ import Countdown, { zeroPad } from 'react-countdown';
 
 function Product({ product, flashSale, outletSaleText, additionalSaleText }) {
   const [, { addToCart }] = useCart();
-  const [selectedVariant, setSelectedVariant] = useState(product.variants ? product.variants[0] : false);
+  const [selectedVariant, setSelectedVariant] = useState(product.variants ? product.variants[1] : false);
   const [selectedOptions, setSelectedOptions] = useState(selectedVariant && selectedVariant.content
     ? selectedVariant.content.selectedOptions
     : false
