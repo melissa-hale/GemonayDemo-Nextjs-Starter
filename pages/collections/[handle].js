@@ -102,7 +102,8 @@ export async function getStaticPaths() {
       (collection) =>
         collection.content?.handle &&
         collection.content.handle != 'Training' &&
-        collection.content.handle != 'Video-Download',
+        collection.content.handle != 'Video-Download' &&
+        collection.content.handle != 'Bras-Tanks',
     )
     .map((collection) => ({ params: { handle: collection.content.handle } }))
 
