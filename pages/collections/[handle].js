@@ -98,7 +98,12 @@ export async function getStaticPaths() {
   })
 
   const handles = results.productCollections
-    .filter((collection) => collection.content?.handle && collection.content.handle != 'Training' && collection.content.handle != 'Video Download')
+    .filter(
+      (collection) =>
+        collection.content?.handle &&
+        collection.content.handle != 'Training' &&
+        collection.content.handle != 'Video-Download',
+    )
     .map((collection) => ({ params: { handle: collection.content.handle } }))
 
   console.log('########################')
