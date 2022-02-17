@@ -110,7 +110,7 @@ export async function getStaticPaths() {
   console.log('########################')
   console.log('########################')
   console.log('########################')
-  console.log('the handles are:')
+  console.log('the handles are!:')
   console.log(handles)
   console.log('########################')
   console.log('########################')
