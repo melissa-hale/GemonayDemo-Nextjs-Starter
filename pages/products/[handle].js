@@ -108,8 +108,8 @@ function Product({ product, flashSale, outletSaleText, additionalSaleText }) {
       <div className={styles.product}>
         <div className={styles.media}>
           <Image
-            src='{product.content.featuredMedia.src}'
-            alt="{product.content.featuredMedia.altText}"
+            src={`http://magen-appli-1mmiekcmp3ern-1625671303.us-east-2.elb.amazonaws.com/media/catalog/product${product.content.media[0].src}`}
+            alt="{product.content.media[0].id}"
             width={530}
             height={350}
             className={styles.image}
@@ -265,6 +265,10 @@ const PAGE_QUERY = `
         options{
           name
           values
+        }
+        media{
+          src
+          id
         }
         featuredMedia{
           src

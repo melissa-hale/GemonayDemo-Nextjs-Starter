@@ -170,6 +170,10 @@ const PRODUCT_FRAGMENT = `
       name
       values
     }
+    media{
+      src
+      id
+    }
     featuredMedia{
       src
       thumbnailSrc
